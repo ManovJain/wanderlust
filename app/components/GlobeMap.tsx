@@ -352,7 +352,14 @@ export default function GlobeMap({
           const isHighlighted = highlighted?.id === dest.id;
           const isHovered = hoveredRef.current?.destination?.id === dest.id;
 
-          let pinSize = 7 * scaleFactor;
+          // Better pin scaling: base size + scale factor with diminishing returns
+          const baseSize = 6;
+          const scaleBoost = Math.sqrt(scaleFactor); // Diminishing returns for large zooms
+          let pinSize = baseSize * scaleBoost;
+          
+          // Clamp pin size to reasonable bounds
+          pinSize = Math.max(5, Math.min(pinSize, 15));
+          
           if (isHighlighted || isHovered) {
             pinSize *= 1.4;
           }
@@ -592,14 +599,14 @@ export default function GlobeMap({
       </AnimatePresence>
 
       {/* Controls */}
-      <div className="absolute top-4 right-4 flex gap-2">
+      <div className="absolute top-3 right-3 md:top-4 md:right-4 flex gap-2">
         <button
           onClick={handleTogglePins}
           className={`
-            px-3 py-1.5 rounded-lg text-xs font-mono transition-all border
+            px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-[10px] md:text-xs font-mono transition-all border touch-manipulation
             ${internalShowPins 
               ? "bg-[#3b82f6] text-white border-[#3b82f6]" 
-              : "bg-[#0a0f1a]/80 text-gray-400 border-[#1e3a5f] hover:border-[#3b82f6]"
+              : "bg-[#0a0f1a]/80 text-gray-400 border-[#1e3a5f] hover:border-[#3b82f6] active:border-[#3b82f6]"
             }
           `}
         >
@@ -608,24 +615,27 @@ export default function GlobeMap({
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-[#0a0f1a]/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-[#1e3a5f]/50">
-        <div className="flex items-center gap-4 text-[10px]">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
-            <span className="text-gray-400">Visited</span>
+      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 bg-[#0a0f1a]/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 md:px-3 md:py-2 border border-[#1e3a5f]/50">
+        <div className="flex items-center gap-2 sm:gap-4 text-[9px] md:text-[10px]">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#22c55e]" />
+            <span className="text-gray-400 hidden sm:inline">Visited</span>
+            <span className="text-gray-400 sm:hidden">✓</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
-            <span className="text-gray-400">Wishlist</span>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#f59e0b]" />
+            <span className="text-gray-400 hidden sm:inline">Wishlist</span>
+            <span className="text-gray-400 sm:hidden">★</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
-            <span className="text-gray-400">Explore</span>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#3b82f6]" />
+            <span className="text-gray-400 hidden sm:inline">Explore</span>
+            <span className="text-gray-400 sm:hidden">○</span>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-4 right-4 text-xs text-gray-500 bg-[#0a0f1a]/80 backdrop-blur-sm px-2 py-1 rounded-md border border-[#1e3a5f]/50 font-mono">
+      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 text-[10px] md:text-xs text-gray-500 bg-[#0a0f1a]/80 backdrop-blur-sm px-2 py-1 rounded-md border border-[#1e3a5f]/50 font-mono hidden sm:block">
         Drag to rotate • Scroll to zoom
       </div>
     </div>

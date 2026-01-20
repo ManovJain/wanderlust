@@ -52,50 +52,51 @@ function DestinationCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={`
-        relative p-3 rounded-lg border transition-all duration-200
+        relative p-3 sm:p-4 rounded-lg border transition-all duration-200 touch-manipulation
         ${status === "visited" 
           ? "bg-[#22c55e]/10 border-[#22c55e]/50" 
           : status === "wishlist" 
             ? "bg-[#f59e0b]/10 border-[#f59e0b]/50" 
-            : "bg-[#0a0f1a]/60 border-[#1e3a5f]/50 hover:border-[#1e3a5f]"
+            : "bg-[#0a0f1a]/60 border-[#1e3a5f]/50 hover:border-[#1e3a5f] active:border-[#3b82f6]"
         }
       `}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5 sm:gap-3">
         <div 
-          className="text-2xl flex-shrink-0"
+          className="text-xl sm:text-2xl flex-shrink-0"
           style={{ filter: status ? "none" : "grayscale(0.5)" }}
         >
           {category.icon}
         </div>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="text-white font-semibold text-sm truncate">{destination.name}</h3>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <h3 className="text-white font-semibold text-sm sm:text-base truncate">{destination.name}</h3>
             {status === "visited" && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] font-mono">
+              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded bg-[#22c55e]/20 text-[#22c55e] font-mono whitespace-nowrap">
                 VISITED
               </span>
             )}
             {status === "wishlist" && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f59e0b]/20 text-[#f59e0b] font-mono">
+              <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded bg-[#f59e0b]/20 text-[#f59e0b] font-mono whitespace-nowrap">
                 WISHLIST
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-xs mt-0.5">{destination.country}</p>
-          <p className="text-gray-400 text-xs mt-1 line-clamp-2">{destination.description}</p>
+          <p className="text-gray-500 text-xs sm:text-sm mt-0.5">{destination.country}</p>
+          <p className="text-gray-400 text-xs sm:text-sm mt-1 line-clamp-2">{destination.description}</p>
         </div>
       </div>
 
-      <div className="flex gap-1.5 mt-3">
+      <div className="flex gap-2 mt-3">
         <button
           onClick={() => onStatusChange(status === "visited" ? null : "visited")}
           className={`
-            flex-1 py-1.5 px-2 rounded text-xs font-mono transition-all
+            flex-1 py-2 sm:py-2.5 px-3 rounded text-xs sm:text-sm font-mono transition-all
+            min-h-[44px] sm:min-h-0
             ${status === "visited"
               ? "bg-[#22c55e] text-white"
-              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#22c55e]/20 hover:text-[#22c55e]"
+              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#22c55e]/20 hover:text-[#22c55e] active:bg-[#22c55e]/30"
             }
           `}
         >
@@ -104,10 +105,11 @@ function DestinationCard({
         <button
           onClick={() => onStatusChange(status === "wishlist" ? null : "wishlist")}
           className={`
-            flex-1 py-1.5 px-2 rounded text-xs font-mono transition-all
+            flex-1 py-2 sm:py-2.5 px-3 rounded text-xs sm:text-sm font-mono transition-all
+            min-h-[44px] sm:min-h-0
             ${status === "wishlist"
               ? "bg-[#f59e0b] text-white"
-              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#f59e0b]/20 hover:text-[#f59e0b]"
+              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#f59e0b]/20 hover:text-[#f59e0b] active:bg-[#f59e0b]/30"
             }
           `}
         >
@@ -125,28 +127,28 @@ function StatsCard({ travelState }: { travelState: TravelState }) {
   const percentage = Math.round((visited / total) * 100);
 
   return (
-    <div className="bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f] rounded-lg p-4">
-      <h2 className="font-mono font-medium text-xs tracking-tight uppercase text-gray-400 mb-3">
+    <div className="bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f] rounded-lg p-3 sm:p-4">
+      <h2 className="font-mono font-medium text-xs tracking-tight uppercase text-gray-400 mb-2.5 sm:mb-3">
         Your Travel Stats
       </h2>
       
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="text-center">
-          <div className="text-2xl font-mono text-[#22c55e]">{visited}</div>
-          <div className="text-[10px] text-gray-500 uppercase">Visited</div>
+          <div className="text-xl sm:text-2xl font-mono text-[#22c55e]">{visited}</div>
+          <div className="text-[9px] sm:text-[10px] text-gray-500 uppercase">Visited</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-mono text-[#f59e0b]">{wishlist}</div>
-          <div className="text-[10px] text-gray-500 uppercase">Wishlist</div>
+          <div className="text-xl sm:text-2xl font-mono text-[#f59e0b]">{wishlist}</div>
+          <div className="text-[9px] sm:text-[10px] text-gray-500 uppercase">Wishlist</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-mono text-gray-400">{total - visited - wishlist}</div>
-          <div className="text-[10px] text-gray-500 uppercase">Unexplored</div>
+          <div className="text-xl sm:text-2xl font-mono text-gray-400">{total - visited - wishlist}</div>
+          <div className="text-[9px] sm:text-[10px] text-gray-500 uppercase">Unexplored</div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs">
+      <div className="space-y-1.5 sm:space-y-2">
+        <div className="flex justify-between text-xs sm:text-sm">
           <span className="text-gray-400">World Explored</span>
           <span className="text-white font-mono">{percentage}%</span>
         </div>
@@ -171,14 +173,15 @@ function CategoryFilter({
   onChange: (category: string | null) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-nowrap sm:flex-wrap gap-2 whitespace-nowrap">
       <button
         onClick={() => onChange(null)}
         className={`
-          px-3 py-1.5 rounded-full text-xs font-mono transition-all
+          px-3 py-2 sm:py-1.5 rounded-full text-xs font-mono transition-all touch-manipulation
+          min-h-[36px] sm:min-h-0
           ${!selected 
             ? "bg-white text-black" 
-            : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#1e3a5f]/50"
+            : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#1e3a5f]/50 active:bg-[#1e3a5f]/70"
           }
         `}
       >
@@ -189,10 +192,11 @@ function CategoryFilter({
           key={key}
           onClick={() => onChange(selected === key ? null : key)}
           className={`
-            px-3 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-1
+            px-3 py-2 sm:py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-1 touch-manipulation
+            min-h-[36px] sm:min-h-0
             ${selected === key 
               ? "text-white" 
-              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#1e3a5f]/50"
+              : "bg-[#1e3a5f]/30 text-gray-400 hover:bg-[#1e3a5f]/50 active:bg-[#1e3a5f]/70"
             }
           `}
           style={selected === key ? { backgroundColor: cat.color } : {}}
@@ -228,16 +232,17 @@ function FilterTabs({
           key={tab.key}
           onClick={() => onChange(tab.key)}
           className={`
-            flex-1 py-2 px-3 rounded-md text-xs font-mono transition-all flex items-center justify-center gap-1.5
+            flex-1 py-2.5 sm:py-2 px-2 sm:px-3 rounded-md text-xs font-mono transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 touch-manipulation
+            min-h-[44px] sm:min-h-0
             ${filter === tab.key 
               ? "bg-[#1e3a5f] text-white" 
-              : "text-gray-500 hover:text-gray-300"
+              : "text-gray-500 hover:text-gray-300 active:text-white"
             }
           `}
         >
-          <span>{tab.label}</span>
+          <span className="text-[10px] sm:text-xs">{tab.label}</span>
           <span 
-            className="text-[10px] px-1.5 py-0.5 rounded-full"
+            className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full"
             style={{ 
               backgroundColor: tab.color ? `${tab.color}20` : "#1e3a5f50",
               color: tab.color || "#9ca3af"
@@ -298,31 +303,35 @@ export default function TravelDashboard({
   });
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-3 sm:space-y-4 h-full flex flex-col">
       <StatsCard travelState={travelState} />
       
-      <div className="bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f] rounded-lg p-4 flex-1 flex flex-col min-h-0">
-        <div className="space-y-3 mb-4">
+      <div className="bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f] rounded-lg p-3 sm:p-4 flex-1 flex flex-col min-h-0">
+        <div className="space-y-2.5 sm:space-y-3 mb-3 sm:mb-4">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search destinations..."
-            className="w-full bg-[#050810] border border-[#1e3a5f] rounded-lg px-3 py-2 text-white text-sm font-mono placeholder:text-gray-600 focus:outline-none focus:border-[#3b82f6] transition-colors"
+            className="w-full bg-[#050810] border border-[#1e3a5f] rounded-lg px-3 py-2.5 sm:py-2 text-white text-sm font-mono placeholder:text-gray-600 focus:outline-none focus:border-[#3b82f6] transition-colors min-h-[44px] sm:min-h-0"
           />
           
           <FilterTabs filter={statusFilter} onChange={setStatusFilter} counts={counts} />
           
-          <CategoryFilter selected={categoryFilter} onChange={setCategoryFilter} />
+          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0 pb-1">
+            <CategoryFilter selected={categoryFilter} onChange={setCategoryFilter} />
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-1 space-y-2 min-h-0">
+        <div className="flex-1 overflow-y-auto -mr-1 pr-2 space-y-2.5 sm:space-y-2 min-h-0 overscroll-contain">
           <AnimatePresence mode="popLayout">
             {filteredDestinations.map(dest => (
               <div
                 key={dest.id}
                 onMouseEnter={() => onDestinationHover?.(dest)}
                 onMouseLeave={() => onDestinationHover?.(null)}
+                onTouchStart={() => onDestinationHover?.(dest)}
+                onTouchEnd={() => onDestinationHover?.(null)}
               >
                 <DestinationCard
                   destination={dest}
@@ -334,7 +343,7 @@ export default function TravelDashboard({
           </AnimatePresence>
           
           {filteredDestinations.length === 0 && (
-            <div className="text-center py-8 text-gray-500 text-sm">
+            <div className="text-center py-12 text-gray-500 text-sm">
               No destinations found
             </div>
           )}

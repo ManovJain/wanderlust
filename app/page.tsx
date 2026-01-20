@@ -51,35 +51,35 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#050810] font-mono">
       {/* Header */}
-      <header className="px-4 md:px-6 py-4 border-b border-[#1e3a5f]/30">
-        <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+      <header className="px-3 md:px-6 py-3 md:py-4 border-b border-[#1e3a5f]/30">
+        <div className="max-w-[1800px] mx-auto flex flex-col gap-3">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-white text-xl font-semibold tracking-tight flex items-center gap-2">
-                <span className="text-2xl">🌍</span>
+              <h1 className="text-white text-lg md:text-xl font-semibold tracking-tight flex items-center gap-2">
+                <span className="text-xl md:text-2xl">🌍</span>
                 Wanderlust
               </h1>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 text-xs md:text-sm">
                 Track your travel bucket list
               </p>
             </div>
             <Navigation />
           </div>
-          <div className="flex items-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
+          <div className="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm overflow-x-auto pb-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#22c55e]" />
               <span className="text-gray-400">
                 <span className="text-white font-semibold">{visitedCount}</span> Visited
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]" />
+            <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#f59e0b]" />
               <span className="text-gray-400">
                 <span className="text-white font-semibold">{wishlistCount}</span> Wishlist
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />
+            <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#3b82f6]" />
               <span className="text-gray-400">
                 <span className="text-white font-semibold">40</span> Destinations
               </span>
@@ -89,18 +89,18 @@ export default function Home() {
       </header>
 
       {/* Main content */}
-      <div className="max-w-[1800px] mx-auto p-4 md:p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-6">
-          {/* Globe */}
-          <div className="order-2 lg:order-1 h-[500px] lg:h-[calc(100vh-160px)] bg-[#0a0f1a]/50 rounded-2xl border border-[#1e3a5f]/30 overflow-hidden">
+      <div className="max-w-[1800px] mx-auto p-3 md:p-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_420px] gap-4 md:gap-6">
+          {/* Globe - on top for mobile */}
+          <div className="order-1 h-[400px] sm:h-[500px] lg:h-[calc(100vh-160px)] bg-[#0a0f1a]/50 rounded-xl lg:rounded-2xl border border-[#1e3a5f]/30 overflow-hidden">
             <GlobeMap 
               highlightedDestination={highlightedDestination}
               travelState={travelState}
             />
           </div>
 
-          {/* Sidebar */}
-          <aside className="order-1 lg:order-2 lg:h-[calc(100vh-160px)] overflow-hidden">
+          {/* Sidebar - below globe on mobile */}
+          <aside className="order-2 lg:h-[calc(100vh-160px)] overflow-hidden">
             <TravelDashboard onDestinationHover={setHighlightedDestination} />
           </aside>
         </div>
