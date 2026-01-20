@@ -25,6 +25,12 @@ export default function SolarSystemCanvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hoveredItem, setHoveredItem] = useState<HoveredItem | null>(null);
+  const [displayScale, setDisplayScale] = useState(1);
+  
+  // Initialize random planet angles once
+  const [initialPlanetAngles] = useState(() => 
+    allCelestialBodies.map(() => Math.random() * 360)
+  );
   
   // Camera state
   const stateRef = useRef({
@@ -35,23 +41,26 @@ export default function SolarSystemCanvas({
     lastMouseX: 0,
     lastMouseY: 0,
     animationFrame: 0,
-    planetAngles: allCelestialBodies.map(() => Math.random() * 360), // Starting angles
+    planetAngles: initialPlanetAngles,
     stars: [] as { x: number; y: number; size: number; opacity: number }[],
   });
 
   // Initialize stars
   useEffect(() => {
-    const stars = [];
-    for (let i = 0; i < 200; i++) {
-      stars.push({
-        x: Math.random() * 2000 - 1000,
-        y: Math.random() * 2000 - 1000,
-        size: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.5 + 0.3,
-      });
-    }
-    stateRef.current.stars = stars;
-    setIsLoading(false);
+    const initStars = async () => {
+      const stars = [];
+      for (let i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * 2000 - 1000,
+          y: Math.random() * 2000 - 1000,
+          size: Math.random() * 1.5 + 0.5,
+          opacity: Math.random() * 0.5 + 0.3,
+        });
+      }
+      stateRef.current.stars = stars;
+      setIsLoading(false);
+    };
+    initStars();
   }, []);
 
   // Draw star field
@@ -193,7 +202,7 @@ export default function SolarSystemCanvas({
     drawStars(ctx, width, height);
 
     // Draw orbits
-    allCelestialBodies.forEach((body, index) => {
+    allCelestialBodies.forEach((body) => {
       if (body.orbitRadius > 0) {
         drawOrbit(ctx, centerX, centerY, body.orbitRadius, scale);
       }
@@ -218,16 +227,18 @@ export default function SolarSystemCanvas({
 
   // Animation loop
   useEffect(() => {
+    let frameId: number;
+    
     const animate = () => {
       render();
-      stateRef.current.animationFrame = requestAnimationFrame(animate);
+      frameId = requestAnimationFrame(animate);
     };
 
-    stateRef.current.animationFrame = requestAnimationFrame(animate);
+    frameId = requestAnimationFrame(animate);
 
     return () => {
-      if (stateRef.current.animationFrame) {
-        cancelAnimationFrame(stateRef.current.animationFrame);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
       }
     };
   }, [render]);
@@ -310,7 +321,7 @@ export default function SolarSystemCanvas({
     }
   }, []);
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleClick = useCallback(() => {
     if (hoveredItem && onPlanetSelect) {
       onPlanetSelect(hoveredItem.planet);
     }
@@ -321,16 +332,16 @@ export default function SolarSystemCanvas({
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const newScale = Math.max(0.2, Math.min(3, stateRef.current.scale * delta));
     stateRef.current.scale = newScale;
+    setDisplayScale(newScale);
   }, []);
 
   // Zoom to planet on double click
-  const handleDoubleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleDoubleClick = useCallback(() => {
     if (hoveredItem) {
       const { planetAngles, scale } = stateRef.current;
       const container = containerRef.current;
       if (!container) return;
 
-      const rect = container.getBoundingClientRect();
       const index = allCelestialBodies.findIndex(b => b.id === hoveredItem.planet.id);
       const angle = (planetAngles[index] * Math.PI) / 180;
       const body = hoveredItem.planet;
@@ -340,9 +351,11 @@ export default function SolarSystemCanvas({
       const targetY = -Math.sin(angle) * body.orbitRadius * scale;
 
       // Animate to target (simplified - just set it)
+      const newScale = Math.min(2, 1.5);
       stateRef.current.offsetX = targetX;
       stateRef.current.offsetY = targetY;
-      stateRef.current.scale = Math.min(2, 1.5);
+      stateRef.current.scale = newScale;
+      setDisplayScale(newScale);
     }
   }, [hoveredItem]);
 
@@ -408,7 +421,7 @@ export default function SolarSystemCanvas({
 
           {/* Scale indicator */}
           <div className="absolute top-4 right-4 bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f]/30 rounded-lg px-3 py-2 text-xs text-gray-400 font-mono">
-            Scale: {stateRef.current.scale.toFixed(2)}x
+            Scale: {displayScale.toFixed(2)}x
           </div>
         </>
       )}

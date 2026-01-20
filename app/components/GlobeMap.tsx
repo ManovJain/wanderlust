@@ -4,6 +4,18 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as d3 from "d3";
 import { motion, AnimatePresence } from "framer-motion";
 import { destinations, categories, type Destination } from "../data/destinations";
+import type { FeatureCollection, Feature, Geometry } from "geojson";
+
+interface CountryProperties {
+  name: string;
+  iso_a2: string;
+}
+
+interface CountryNameData {
+  name: string;
+  "alpha-2": string;
+  "country-code": string;
+}
 
 // Country colors
 const countryColors: Record<string, string> = {
@@ -53,7 +65,7 @@ export default function GlobeMap({
   
   const stateRef = useRef({
     projection: null as d3.GeoProjection | null,
-    countries: null as any,
+    countries: null as FeatureCollection<Geometry, CountryProperties> | null,
     rotation: [0, -15] as [number, number],
     autoRotate: true,
     dots: [] as { lng: number; lat: number; color: string; countryCode: string }[],
@@ -239,7 +251,7 @@ export default function GlobeMap({
     const baseDotSpacing = Math.max(1.0, Math.min(2.0, 400 / radius));
 
     // Optimized render function
-    const render = (time: number = 0) => {
+    const render = () => {
       const { width, height, radius } = state;
       const currentScale = projection.scale();
       const scaleFactor = currentScale / radius;
@@ -396,14 +408,14 @@ export default function GlobeMap({
         const [world, names] = await Promise.all([worldRes.json(), namesRes.json()]);
         const topojson = await import("topojson-client");
         
-        const countries = topojson.feature(world, world.objects.countries) as any;
+        const countries = topojson.feature(world, world.objects.countries) as FeatureCollection<Geometry, CountryProperties>;
 
-        const nameMap = new Map(names.map((c: any) => [
+        const nameMap = new Map(names.map((c: CountryNameData) => [
           String(c["country-code"]).padStart(3, "0"),
           { name: c.name, alpha2: c["alpha-2"] }
         ]));
 
-        countries.features = countries.features.map((f: any) => {
+        countries.features = countries.features.map((f: Feature<Geometry, CountryProperties>) => {
           const info = nameMap.get(String(f.id).padStart(3, "0")) || { name: "Unknown", alpha2: "" };
           return {
             ...f,
@@ -417,7 +429,7 @@ export default function GlobeMap({
         const allDots: typeof state.dots = [];
         const spacing = baseDotSpacing;
 
-        countries.features.forEach((feature: any) => {
+        countries.features.forEach((feature: Feature<Geometry, CountryProperties>) => {
           const code = feature.properties?.iso_a2 || "";
           const color = countryColors[code] || "#4a5568";
           const bounds = d3.geoBounds(feature);
@@ -620,7 +632,7 @@ export default function GlobeMap({
   );
 }
 
-function HoverPopup({ item, travelState }: { item: HoveredItem; travelState: Record<string, any> }) {
+function HoverPopup({ item, travelState }: { item: HoveredItem; travelState: Record<string, "visited" | "wishlist" | null> }) {
   const status = item.destination ? travelState[item.destination.id] : null;
   
   return (

@@ -62,8 +62,7 @@ function PixelGridTransition({
     for (let n = 0; n < total; n++) {
       const row = Math.floor(n / gridSize);
       const col = n % gridSize;
-      const color = Math.random() > 0.85 ? "var(--ds-blue-800, #0070f3)" : "var(--ds-gray-200, #333)";
-      result.push({ id: n, row, col, color });
+      result.push({ id: n, row, col });
     }
     return result;
   }, [gridSize]);
@@ -79,10 +78,12 @@ function PixelGridTransition({
       const j = Math.floor(Math.random() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-    setShuffledOrder(indices);
-
-    setShowPixels(true);
-    setAnimState("growing");
+    
+    queueMicrotask(() => {
+      setShuffledOrder(indices);
+      setShowPixels(true);
+      setAnimState("growing");
+    });
 
     const shrinkTimer = setTimeout(() => setAnimState("shrinking"), animationStepDuration * 1000);
     const hideTimer = setTimeout(() => {
@@ -137,11 +138,12 @@ function PixelGridTransition({
           {showPixels &&
             pixels.map((pixel) => {
               const order = orderMap.get(pixel.id) ?? 0;
+              const color = pixel.id % 7 === 0 ? "var(--ds-blue-800, #0070f3)" : "var(--ds-gray-200, #333)";
               return (
                 <motion.div
                   key={pixel.id}
                   style={{
-                    backgroundColor: pixel.color,
+                    backgroundColor: color,
                     aspectRatio: "1 / 1",
                     gridArea: `${pixel.row + 1} / ${pixel.col + 1}`,
                   }}

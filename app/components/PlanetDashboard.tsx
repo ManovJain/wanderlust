@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
-import { allCelestialBodies, planets, sun, planetCategories, getPlanetsByCategory, type Planet } from "../data/planets";
+import { allCelestialBodies, planets, planetCategories, getPlanetsByCategory, type Planet } from "../data/planets";
 
 interface PlanetDashboardProps {
   selectedPlanet?: Planet | null;

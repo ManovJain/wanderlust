@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as d3 from "d3";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Planet } from "../data/planets";
 import { generatePlanetSurface, generateSaturnRings, type PlanetDot } from "../data/planet-surfaces";
 
@@ -15,14 +15,13 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
+  const [autoRotate, setAutoRotate] = useState(true);
 
   const stateRef = useRef<{
     width: number;
     height: number;
     projection: d3.GeoProjection;
     rotation: [number, number, number];
-    autoRotate: boolean;
     isDragging: boolean;
     lastMouseX: number;
     lastMouseY: number;
@@ -33,7 +32,6 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
     height: 0,
     projection: d3.geoOrthographic(),
     rotation: [0, 0, 0],
-    autoRotate: true,
     isDragging: false,
     lastMouseX: 0,
     lastMouseY: 0,
@@ -43,16 +41,20 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
 
   // Initialize planet surface
   useEffect(() => {
-    setIsLoading(true);
-    stateRef.current.isInitialized = false;
+    const loadPlanet = async () => {
+      setIsLoading(true);
+      stateRef.current.isInitialized = false;
+      
+      // Generate surface dots
+      const spacing = planet.id === "sun" ? 3 : 2.5;
+      const dots = generatePlanetSurface(planet, spacing);
+      stateRef.current.dots = dots;
+      stateRef.current.isInitialized = true;
+      
+      setIsLoading(false);
+    };
     
-    // Generate surface dots
-    const spacing = planet.id === "sun" ? 3 : 2.5;
-    const dots = generatePlanetSurface(planet, spacing);
-    stateRef.current.dots = dots;
-    stateRef.current.isInitialized = true;
-    
-    setIsLoading(false);
+    loadPlanet();
   }, [planet]);
 
   // Render function
@@ -221,7 +223,7 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
   // Mouse interaction
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     stateRef.current.isDragging = true;
-    stateRef.current.autoRotate = false;
+    setAutoRotate(false);
     stateRef.current.lastMouseX = e.clientX;
     stateRef.current.lastMouseY = e.clientY;
   }, []);
@@ -249,7 +251,7 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
   }, []);
 
   const handleDoubleClick = useCallback(() => {
-    stateRef.current.autoRotate = !stateRef.current.autoRotate;
+    setAutoRotate(prev => !prev);
   }, []);
 
   // Animation loop
@@ -263,7 +265,7 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
       const elapsed = currentTime - lastTime;
 
       if (elapsed >= frameDelay) {
-        if (stateRef.current.autoRotate && !stateRef.current.isDragging) {
+        if (autoRotate && !stateRef.current.isDragging) {
           stateRef.current.rotation[0] += planet.rotationSpeed * 10;
           if (stateRef.current.rotation[0] >= 360) {
             stateRef.current.rotation[0] -= 360;
@@ -284,7 +286,7 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
         cancelAnimationFrame(animationId);
       }
     };
-  }, [render, planet]);
+  }, [render, planet, autoRotate]);
 
   // Handle resize
   useEffect(() => {
@@ -323,7 +325,7 @@ export default function PlanetGlobe({ planet, className = "" }: PlanetGlobeProps
 
           {/* Controls hint */}
           <div className="absolute bottom-4 left-4 bg-[#0a0f1a]/80 backdrop-blur-sm border border-[#1e3a5f]/30 rounded-lg px-3 py-2 text-xs text-gray-400 font-mono">
-            <div>Drag to rotate • Double-click to {stateRef.current.autoRotate ? "pause" : "resume"}</div>
+            <div>Drag to rotate • Double-click to {autoRotate ? "pause" : "resume"}</div>
           </div>
 
           {/* Planet info */}

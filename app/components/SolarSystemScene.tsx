@@ -2,8 +2,19 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import * as d3 from "d3";
-import { motion, AnimatePresence } from "framer-motion";
 import { allCelestialBodies, type Planet } from "../data/planets";
+import type { FeatureCollection, Feature, Geometry } from "geojson";
+
+interface CountryProperties {
+  name: string;
+  iso_a2: string;
+}
+
+interface CountryNameData {
+  name: string;
+  "alpha-2": string;
+  "country-code": string;
+}
 
 interface SolarSystemSceneProps {
   selectedPlanet?: Planet | null;
@@ -21,14 +32,15 @@ interface PlanetState {
 }
 
 export default function SolarSystemScene({
-  selectedPlanet,
-  onPlanetSelect,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  selectedPlanet: _selectedPlanet,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onPlanetSelect: _onPlanetSelect,
   className = "",
 }: SolarSystemSceneProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hoveredPlanet, setHoveredPlanet] = useState<Planet | null>(null);
 
   const stateRef = useRef<{
     width: number;
@@ -41,7 +53,7 @@ export default function SolarSystemScene({
     lastMouseY: number;
     planets: Map<string, PlanetState>;
     stars: Array<{ x: number; y: number; size: number; opacity: number }>;
-    earthCountries: any;
+    earthCountries: FeatureCollection<Geometry, CountryProperties> | null;
   }>({
     width: 0,
     height: 0,
@@ -84,13 +96,13 @@ export default function SolarSystemScene({
           const [world, names] = await Promise.all([worldRes.json(), namesRes.json()]);
           const topojson = await import("topojson-client");
           
-          const countries = topojson.feature(world, world.objects.countries) as any;
-          const nameMap = new Map(names.map((c: any) => [
+          const countries = topojson.feature(world, world.objects.countries) as FeatureCollection<Geometry, CountryProperties>;
+          const nameMap = new Map(names.map((c: CountryNameData) => [
             String(c["country-code"]).padStart(3, "0"),
             { name: c.name, alpha2: c["alpha-2"] }
           ]));
 
-          countries.features = countries.features.map((f: any) => {
+          countries.features = countries.features.map((f: Feature<Geometry, CountryProperties>) => {
             const info = nameMap.get(String(f.id).padStart(3, "0")) || { name: "Unknown", alpha2: "" };
             return {
               ...f,
@@ -132,13 +144,14 @@ export default function SolarSystemScene({
     };
 
     initScene();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Generate planet surfaces
   const generateAllPlanetSurfaces = async () => {
     const { planets, earthCountries } = stateRef.current;
 
-    planets.forEach((planetState, id) => {
+    planets.forEach((planetState) => {
       const { planet } = planetState;
       const dots: Array<{ lng: number; lat: number; color: string; countryCode?: string }> = [];
       
@@ -151,7 +164,7 @@ export default function SolarSystemScene({
           CA: "#dc2626", AU: "#60a5fa", ES: "#dc2626", MX: "#22c55e", others: "#4a5568"
         };
 
-        earthCountries.features.forEach((feature: any) => {
+        earthCountries.features.forEach((feature: Feature<Geometry, CountryProperties>) => {
           const code = feature.properties?.iso_a2 || "";
           const color = countryColors[code] || countryColors.others;
           const bounds = d3.geoBounds(feature);
@@ -177,7 +190,7 @@ export default function SolarSystemScene({
   };
 
   // Procedural surface generation
-  const generateProceduralSurface = (
+  const generateProceduralSurface = useCallback((
     planet: Planet,
     spacing: number,
     dots: Array<{ lng: number; lat: number; color: string }>
@@ -255,7 +268,7 @@ export default function SolarSystemScene({
         dots.push({ lng, lat, color });
       }
     }
-  };
+  }, []);
 
   // Render function
   const render = useCallback(() => {

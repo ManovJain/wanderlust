@@ -23,9 +23,6 @@ export function generatePlanetSurface(planet: Planet, spacing: number = 2.5): Pl
       // Sun: Bright center with corona patterns
       for (let lng = -180; lng <= 180; lng += spacing) {
         for (let lat = -90; lat <= 90; lat += spacing) {
-          const distFromPole = Math.abs(lat);
-          const n = noise(lng, lat, 1);
-          
           // Create solar flare patterns
           const flareIntensity = noise(lng * 0.1, lat * 0.1, 2);
           

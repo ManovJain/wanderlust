@@ -3,7 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Navigation from "../components/Navigation";
-import { sun, planets, type Planet } from "../data/planets";
+import { type Planet } from "../data/planets";
 
 const SolarSystemScene = dynamic(() => import("../components/SolarSystemScene"), {
   ssr: false,
