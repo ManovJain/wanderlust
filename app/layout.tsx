@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vercel BFCM 2025",
-  description: "A recreation of Vercel's Black Friday - Cyber Monday 2025 dashboard",
-    generator: 'v0.app'
+  title: "Wanderlust - Explore Earth & Space",
+  description: "Interactive 3D globe and solar system visualization. Track your travel bucket list and explore the cosmos.",
+  generator: 'v0.app'
 };
 
 export default function RootLayout({

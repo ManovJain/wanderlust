@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import TravelDashboard, { type Destination } from "./components/TravelDashboard";
+import Navigation from "./components/Navigation";
 
 const GlobeMap = dynamic(() => import("./components/GlobeMap"), {
   ssr: false,
@@ -54,14 +55,17 @@ export default function Home() {
       {/* Header */}
       <header className="px-4 md:px-6 py-4 border-b border-[#1e3a5f]/30">
         <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-white text-xl font-semibold tracking-tight flex items-center gap-2">
-              <span className="text-2xl">🌍</span>
-              Wanderlust
-            </h1>
-            <p className="text-gray-500 text-sm">
-              Track your travel bucket list
-            </p>
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-white text-xl font-semibold tracking-tight flex items-center gap-2">
+                <span className="text-2xl">🌍</span>
+                Wanderlust
+              </h1>
+              <p className="text-gray-500 text-sm">
+                Track your travel bucket list
+              </p>
+            </div>
+            <Navigation />
           </div>
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
